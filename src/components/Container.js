@@ -11,7 +11,7 @@ const defaultOptions = {
   enableShadows: true,
 }
 
-class DiceBox{
+class Container{
 	size = 9.5
 	constructor(options){
 		this.config = {...defaultOptions, ...options}
@@ -44,9 +44,9 @@ class DiceBox{
 
 		// Bottom of the Box
 		const ground = CreateBox("ground",{
-			width: this.size, 
+			width: this.size * 2, 
 			height: 1,
-			depth: this.size
+			depth: this.size * 2
 		}, this.config.scene)
 		ground.scaling = new Vector3(aspect, 1, 1)
 		ground.material = boxMaterial
@@ -112,4 +112,4 @@ class DiceBox{
 	}
 }
 
-export default DiceBox
+export default Container
