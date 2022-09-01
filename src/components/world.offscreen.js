@@ -1,18 +1,18 @@
-import worldWorker from './offscreenCanvas.worker?worker&inline' // using vite.js worker import - this will be compiled away
+import worldWorker from './offscreenCanvas.worker?worker&inline' // using vits.js worker import - this will be compiled away
+import { createUUID } from '../helpers'
 
 class WorldOffScreen {
 	initialized = false
 	offscreenWorkerInit = false
 	themeLoadedInit = false
-	pendingThemePromises = {}
+	pendingThemePromises = []
 	#offscreenCanvas
 	#OffscreenWorker
-	// onInitComplete = () => {} // init callback
+	onInitComplete = () => {} // init callback
 	onRollResult = () => {} // individual die callback
 	onRollComplete = () => {} // roll group callback
 
 	constructor(options){
-		this.onInitComplete = options.onInitComplete
 
 		// transfer control offscreen
 		this.#offscreenCanvas = options.canvas.transferControlToOffscreen()
@@ -30,7 +30,7 @@ class WorldOffScreen {
 
 	// initialize the babylon scene
 	async #initScene(config) {
-		// initialize the offscreen worker
+		// initalize the offscreen worker
 		this.#OffscreenWorker.postMessage({
 			action: "init",
 			canvas: this.#offscreenCanvas,
@@ -45,12 +45,8 @@ class WorldOffScreen {
 				case "init-complete":
 					this.offscreenWorkerInit() //fulfill promise so other things can run
 					break;
-				case "connect-complete":
-					break;
 				case "theme-loaded":
-					if(e.data.id){
-						this.pendingThemePromises[e.data.id](e.data.id)
-					}
+					this.pendingThemePromises[e.data.id]()
 					break;
 				case 'roll-result':
 					this.onRollResult(e.data.die)
@@ -63,8 +59,7 @@ class WorldOffScreen {
 					break;
 			}
 		}
-		// await Promise.all([this.#OffscreenWorker.init])
-		await this.#OffscreenWorker.init
+		await Promise.all([this.#OffscreenWorker.init])
 
 		this.onInitComplete(true)
 
@@ -87,16 +82,14 @@ class WorldOffScreen {
 		this.#OffscreenWorker.postMessage({action: "resize", options});
 	}
 
-	async loadTheme(options) {
-		// prevent multiple requests of the same theme
-		return new Promise((resolve, reject) => {
-			if(Object.keys(this.pendingThemePromises).includes(options.theme)) {
-				return resolve()
-			}
+	async loadTheme(theme) {
+		const id = createUUID()
 
-			this.pendingThemePromises[options.theme] = resolve
-			this.#OffscreenWorker.postMessage({action: "loadTheme", options})
-		}).catch(error => console.error(error))
+		return new Promise((resolve, reject) => {
+			this.#OffscreenWorker.postMessage({action: "loadTheme", id, theme})
+			// this.themeLoadedInit = resolve
+			this.pendingThemePromises[id] = resolve
+		})
 	}
 
 	clear(){
@@ -105,10 +98,6 @@ class WorldOffScreen {
 
 	add(options){
 		this.#OffscreenWorker.postMessage({action: "addDie", options})
-	}
-	
-	addNonDie(options){
-		this.#OffscreenWorker.postMessage({action: "addNonDie", options})
 	}
 
 	remove(options){
