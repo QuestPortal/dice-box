@@ -320,7 +320,7 @@ S = new WeakMap(), F = new WeakMap(), H = new WeakMap(), o = new WeakMap(), R = 
     V(this, x).call(this);
   };
   if ("OffscreenCanvas" in window && "transferControlToOffscreen" in this.canvas && this.config.offscreen) {
-    const l = await import("./world.offscreen.eca82583.mjs").then((d) => d.default);
+    const l = await import("./world.offscreen.aa047f78.mjs").then((d) => d.default);
     i(this, R, new l({
       canvas: this.canvas,
       options: this.config,
@@ -328,7 +328,7 @@ S = new WeakMap(), F = new WeakMap(), H = new WeakMap(), o = new WeakMap(), R = 
     }));
   } else {
     this.config.offscreen && (console.warn("This browser does not support OffscreenCanvas. Using standard canvas fallback."), this.config.offscreen = !1);
-    const l = await import("./world.onscreen.14f0ab6d.mjs").then((d) => d.default);
+    const l = await import("./world.onscreen.a6984dae.mjs").then((d) => d.default);
     i(this, R, new l({
       canvas: this.canvas,
       options: this.config,
