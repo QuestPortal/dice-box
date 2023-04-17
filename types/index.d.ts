@@ -2,18 +2,28 @@
 declare module "@3d-dice/dice-box" {
   type DiceboxConfig = {
     id?: string;
+    assetPath?: string;
+    gravity?: number;
+    mass?: number;
+    friction?: number;
+    restitution?: number;
+    angularDamping?: number;
+    linearDamping?: number;
+    spinForce?: number;
+    throwForce?: number;
+    startingHeight?: number;
+    settleTimeout?: number;
+    offscreen?: boolean;
+    delay?: number;
+    lightIntensity?: number;
     enableShadows?: boolean;
     shadowTransparency?: number;
-    lightIntensity?: number;
-    delay?: number;
+    suspendSimulation?: boolean;
     scale?: number;
     theme?: string;
     themeColor?: string;
-    offscreen?: boolean;
-    assetPath?: string;
     origin?: string;
     meshFile?: string;
-    suspendSimulation?: boolean;
   };
 
   type DieResult = {
