@@ -61,7 +61,7 @@ declare module "@3d-dice/dice-box" {
     init: () => Promise<Dicebox>;
     add: (arg: RollParameter) => Promise<DieResult[]>;
     roll: (arg: RollParameter) => Promise<DieResult[]>;
-
+    updateConfig: (config: Partial<DiceboxConfig>) => Promise<void>;
     reroll: (arg: RollParameter) => Promise<DieResult[]>;
   }
 
