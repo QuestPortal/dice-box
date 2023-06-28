@@ -43,7 +43,7 @@ declare module "@3d-dice/dice-box" {
     themeColor?: string;
   };
 
-  type RollNotation = string | DiceboxRollObject[];
+  type RollNotation = string | string[] | DiceboxRollObject[];
 
   type RollParameter =
     | RollNotation

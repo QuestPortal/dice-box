@@ -1,10 +1,9 @@
 const path = require("path");
 const { defineConfig } = require("vite");
 const copy = require("rollup-plugin-copy");
-const { visualizer } = require("rollup-plugin-visualizer");
+// const { visualizer } = require("rollup-plugin-visualizer");
 
 module.exports = defineConfig({
-  base: process.env.NODE_ENV === "production" ? "./" : "./src",
   build: {
     lib: {
       entry: path.resolve(__dirname, "src/index.js"),
@@ -41,10 +40,10 @@ module.exports = defineConfig({
           ],
           hook: "writeBundle",
         }),
-        visualizer({
+        /* visualizer({
           open: true,
           brotliSize: true,
-        }),
+        }), */
       ],
     },
   },
