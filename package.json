@@ -38,8 +38,7 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "serve": "vite preview",
-    "postinstall": "node copyAssets.js"
+    "serve": "vite preview"
   },
   "dependencies": {
     "@babylonjs/core": "^5.10.0",
