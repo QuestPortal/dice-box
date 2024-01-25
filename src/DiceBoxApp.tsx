@@ -6,7 +6,7 @@ const canvasId = "dicebox-canvas";
 
 const config = {
   assetPath: "/assets/dice-box/",
-  theme: "qp",
+  theme: "obsidian",
   themeColor: "#9610E9",
   meshFile: "models/qp.json",
   angularDamping: 0.2,
