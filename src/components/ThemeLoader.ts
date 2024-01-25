@@ -12,19 +12,28 @@ type MaterialConfig = {
   specularTexture?: string
 }
 
-type ThemeConfig =
-  | {
-      type: "color"
-      basePath: string
-      materials: { light: MaterialConfig; dark: MaterialConfig }
-      theme: string
-    }
-  | {
-      type: "standard"
-      basePath: string
-      material: MaterialConfig
-      theme: string
-    }
+type ThemeConfigColor = {
+  type: "color"
+  basePath: string
+  materials: { light: MaterialConfig; dark: MaterialConfig }
+  theme: string
+}
+
+type ThemeConfigStandard = {
+  type: "standard"
+  basePath: string
+  material: MaterialConfig
+  theme: string
+}
+
+type ThemeConfigGLTF = {
+  type: "glft"
+  basePath: string
+  materialFilePath: string
+  theme: string
+}
+
+type ThemeConfig = ThemeConfigColor | ThemeConfigStandard | ThemeConfigGLTF
 
 class ThemeLoader {
   scene: BABYLON.Scene
@@ -33,12 +42,12 @@ class ThemeLoader {
     this.scene = scene
   }
 
-  async loadStandardMaterial(
-    name: string,
-    basePath: string,
-    matConfig: MaterialConfig
-  ) {
-    const diceMaterial = new StandardMaterial(name, this.scene)
+  async loadStandardMaterial({
+    theme,
+    basePath,
+    material: matConfig,
+  }: ThemeConfigStandard) {
+    const diceMaterial = new StandardMaterial(theme, this.scene)
     if (matConfig.diffuseTexture) {
       const texture = await this.getTexture("diffuse", basePath, matConfig)
       diceMaterial.diffuseTexture = texture
@@ -102,13 +111,9 @@ class ThemeLoader {
     mat.AddAttribute("customColor")
   }
 
-  async loadColorMaterial(
-    name: string,
-    basePath: string,
-    matConfig: { light: MaterialConfig; dark: MaterialConfig }
-  ) {
-    await this._loadColorMaterial(name, "light", basePath, matConfig.light)
-    await this._loadColorMaterial(name, "dark", basePath, matConfig.dark)
+  async loadColorMaterial({ theme, basePath, materials }: ThemeConfigColor) {
+    await this._loadColorMaterial(theme, "light", basePath, materials.light)
+    await this._loadColorMaterial(theme, "dark", basePath, materials.dark)
   }
 
   async getTexture(
@@ -147,6 +152,33 @@ class ThemeLoader {
     return texture
   }
 
+  async loadGLTFMaterial(config: ThemeConfigGLTF) {
+    console.log(config)
+    const data = await BABYLON.SceneLoader.ImportMeshAsync(
+      undefined,
+      config.basePath + "/",
+      config.materialFilePath,
+      this.scene
+    )
+
+    for (const mesh of data.meshes) {
+      mesh.isVisible = false
+      mesh.setEnabled(false)
+    }
+    const materials = data.meshes
+      .map((mesh) => mesh.material)
+      .filter((m): m is BABYLON.Material => Boolean(m))
+    if (materials.length !== 1) {
+      throw new Error(
+        `Error loading glft material. Expected 1 material, got ${materials.length}`
+      )
+    }
+    const material = materials[0]
+    material.name = config.theme
+
+    return materials
+  }
+
   async importTextureAsync(url: string) {
     return new Promise<Texture>((resolve, reject) => {
       const texture: Texture = new Texture(
@@ -166,17 +198,12 @@ class ThemeLoader {
 
   async load(config: ThemeConfig) {
     if (config.type === "color") {
-      await this.loadColorMaterial(
-        config.theme,
-        config.basePath,
-        config.materials
-      )
+      await this.loadColorMaterial(config)
     } else if (config.type === "standard") {
-      await this.loadStandardMaterial(
-        config.theme,
-        config.basePath,
-        config.material
-      )
+      await this.loadStandardMaterial(config)
+    } else if (config.type === "glft") {
+      console.log("loading binary material", config)
+      await this.loadGLTFMaterial(config)
     } else {
       // @ts-ignore
       console.error(`theme type: ${config.type} not supported`)

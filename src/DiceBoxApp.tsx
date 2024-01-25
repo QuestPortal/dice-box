@@ -6,9 +6,9 @@ const canvasId = "dicebox-canvas"
 
 const config = {
   assetPath: "/assets/dice-box/",
-  theme: "qp",
+  theme: "marble",
   themeColor: "#9610E9",
-  meshFile: "exports/models/master/master.glb",
+  meshFile: "models/default/default.glb",
   angularDamping: 0.2,
   linearDamping: 0.5,
   delay: 2,
@@ -23,7 +23,7 @@ const config = {
   throwForce: 4,
   ttl: 2000,
   fadeOutDuration: 500,
-  offscreen: true,
+  offscreen: false,
 }
 
 export const DiceBoxApp = () => {

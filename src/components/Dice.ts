@@ -123,7 +123,7 @@ class Dice {
 
   static async loadModelMetadata(options: any) {
     const metadataPath =
-      "http://localhost:5173/assets/dice-box/exports/models/master/metadata.json"
+      "http://localhost:5173/assets/dice-box/models/default/metadata.json"
     const metadata = await fetch(metadataPath).then((resp) => {
       if (resp.ok) {
         const contentType = resp.headers.get("content-type")
@@ -149,14 +149,7 @@ class Dice {
   // load all the dice models
   static async loadModels(options: any, scene: BABYLON.Scene) {
     // can we get scene without passing it in?
-    const {
-      meshFilePath,
-      meshName,
-      meshFile,
-      scale,
-      d4FaceDown = true,
-      assetPath,
-    } = options
+    const { meshFilePath, meshName } = options
 
     const modelData: any = await this.loadModelMetadata(options)
     const data = await SceneLoader.ImportMeshAsync(
@@ -171,6 +164,7 @@ class Dice {
     let root = undefined
     const colliders = []
     for (const mesh of data.meshes) {
+      console.log("mesh", mesh.name)
       if (!(mesh instanceof BABYLON.Mesh)) {
         throw new Error("mesh not a Mesh: " + meshName)
       }
@@ -258,7 +252,7 @@ class Dice {
     // @ts-ignore
     scene.themeData[meshName].colliderFaceMap = modelData.colliderFaceMap
     // @ts-ignore
-    scene.themeData[meshName].d4FaceDown = d4FaceDown
+    scene.themeData[meshName].d4FaceDown = true
 
     return colliders
   }

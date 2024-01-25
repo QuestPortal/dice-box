@@ -479,7 +479,7 @@ const loadColorDice = async (scene: BABYLON.Scene) => {
 const loadThemeDice = async (scene: BABYLON.Scene, theme: string) => {
   const materials = await loadMaterials({
     modelFile: `${theme}.glb`,
-    rootPath: `http://localhost:5173/assets/dice-box/exports/materials/${theme}/`,
+    rootPath: `http://localhost:5173/assets/dice-box/themes/${theme}/`,
     scene,
   })
   const material = materials[0]
@@ -599,9 +599,8 @@ const initDice = async ({
   scene: BABYLON.Scene
   diceTheme: DiceTheme
 }) => {
-  const modelFile = "master.glb"
-  const rootPath =
-    "http://localhost:5173/assets/dice-box/exports/models/master/"
+  const modelFile = "default.glb"
+  const rootPath = "http://localhost:5173/assets/dice-box/models/default/"
 
   /*
   // new textures are not working with this
