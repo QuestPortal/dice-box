@@ -1,14 +1,14 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState } from "react"
 
-import DiceBox from "./WorldFacade";
+import DiceBox from "./WorldFacade"
 
-const canvasId = "dicebox-canvas";
+const canvasId = "dicebox-canvas"
 
 const config = {
   assetPath: "/assets/dice-box/",
-  theme: "obsidian",
+  theme: "qp",
   themeColor: "#9610E9",
-  meshFile: "models/qp.json",
+  meshFile: "exports/models/master/master.glb",
   angularDamping: 0.2,
   linearDamping: 0.5,
   delay: 2,
@@ -23,44 +23,44 @@ const config = {
   throwForce: 4,
   ttl: 2000,
   fadeOutDuration: 500,
-  offscreen: false,
-};
+  offscreen: true,
+}
 
 export const DiceBoxApp = () => {
   const [canvasElement, setCanvasElement] = useState<HTMLCanvasElement | null>(
     null
-  );
-  const [status, setStatus] = useState("loading");
-  const [ready, setReady] = useState(false);
-  const [dicebox, setDicebox] = useState<DiceBox>();
-  const [result, setResult] = useState<string>("");
-  const [rollString, setRollString] = useState<string>("1d20");
+  )
+  const [status, setStatus] = useState("loading")
+  const [ready, setReady] = useState(false)
+  const [dicebox, setDicebox] = useState<DiceBox>()
+  const [result, setResult] = useState<string>("")
+  const [rollString, setRollString] = useState<string>("1d20")
 
   useEffect(() => {
     if (canvasElement === null) {
-      return;
+      return
     }
     try {
-      setStatus("creating");
-      const dicebox = new DiceBox(`#${canvasId}`, config);
-      setDicebox(dicebox);
-      setStatus("initializing");
+      setStatus("creating")
+      const dicebox = new DiceBox(`#${canvasId}`, config)
+      setDicebox(dicebox)
+      setStatus("initializing")
       dicebox
         .init()
         .then(() => {
-          setStatus("initialized");
-          setReady(true);
+          setStatus("initialized")
+          setReady(true)
         })
         .catch((error) => {
-          console.error(error);
-          setStatus("failed to initialize");
-        });
+          console.error(error)
+          setStatus("failed to initialize")
+        })
     } catch (error) {
-      setStatus("failed to create");
-      console.error(error);
-      return;
+      setStatus("failed to create")
+      console.error(error)
+      return
     }
-  }, [canvasElement]);
+  }, [canvasElement])
 
   return (
     <div
@@ -84,11 +84,11 @@ export const DiceBoxApp = () => {
         }}
         onClick={() => {
           if (dicebox === undefined) {
-            return;
+            return
           }
           dicebox.roll(rollString.split(",")).then((result) => {
-            setResult(result.map((r) => r.value).join(","));
-          });
+            setResult(result.map((r) => r.value).join(","))
+          })
         }}
       >
         Roll
@@ -106,5 +106,5 @@ export const DiceBoxApp = () => {
         }}
       />
     </div>
-  );
-};
+  )
+}

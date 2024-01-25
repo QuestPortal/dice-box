@@ -3,6 +3,7 @@ import { useState, useEffect, useRef, useCallback } from "react"
 import * as BABYLON from "@babylonjs/core"
 import { CustomMaterial } from "@babylonjs/materials"
 
+import { Inspector } from "@babylonjs/inspector"
 import "@babylonjs/loaders/glTF/2.0/glTFLoader"
 
 const DEBUG = true
@@ -818,7 +819,7 @@ export const BabylonApp = () => {
 
   const onPick = useCallback(
     (pickInfo: BABYLON.PickingInfo) => {
-      const mesh = pickInfo.pickedMesh
+      const mesh = pickInfo.pickedMesh as BABYLON.Mesh
       const faceId = pickInfo.faceId
       if (mesh === null) {
         return
@@ -827,6 +828,7 @@ export const BabylonApp = () => {
         // only allow picking colliders
         return
       }
+
       const diceName = mesh.name.replace("_collider", "")
       const diceFaceIdValues = colliderFaceMap[diceName]
       if (diceFaceIdValues === undefined) {
@@ -867,6 +869,8 @@ export const BabylonApp = () => {
       }
       setNodeGroups(groupNodes(scene))
     })
+    // scene.debugLayer.show()
+    Inspector.Show(scene, {})
     return () => {
       mounted = false
       setCamera(undefined)
