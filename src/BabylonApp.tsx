@@ -6,144 +6,7 @@ import { CustomMaterial } from "@babylonjs/materials"
 import { Inspector } from "@babylonjs/inspector"
 import "@babylonjs/loaders/glTF/2.0/glTFLoader"
 
-const DEBUG = true
-
-const colliderFaceMap: { [dice: string]: { [faceId: string]: number } } = {
-  d4: {
-    "1": 1,
-    "3": 2,
-    "0": 3,
-    "2": 4,
-  },
-  d6: {
-    "0": 1,
-    "6": 1,
-    "3": 2,
-    "9": 2,
-    "5": 3,
-    "11": 3,
-    "2": 4,
-    "8": 4,
-    "1": 5,
-    "7": 5,
-    "4": 6,
-    "10": 6,
-  },
-  d8: {
-    "3": 1,
-    "5": 2,
-    "4": 3,
-    "6": 4,
-    "0": 5,
-    "7": 6,
-    "1": 7,
-    "2": 8,
-  },
-  d10: {
-    "16": 0,
-    "6": 0,
-    "4": 1,
-    "14": 1,
-    "19": 2,
-    "9": 2,
-    "10": 3,
-    "0": 3,
-    "5": 4,
-    "15": 4,
-    "2": 5,
-    "12": 5,
-    "8": 6,
-    "18": 6,
-    "11": 7,
-    "1": 7,
-    "7": 8,
-    "17": 8,
-    "3": 9,
-    "13": 9,
-  },
-  d12: {
-    "0": 1,
-    "12": 1,
-    "13": 1,
-    "4": 2,
-    "20": 2,
-    "21": 2,
-    "9": 3,
-    "30": 3,
-    "31": 3,
-    "11": 4,
-    "34": 4,
-    "35": 4,
-    "3": 5,
-    "18": 5,
-    "19": 5,
-    "7": 6,
-    "26": 6,
-    "27": 6,
-    "10": 7,
-    "32": 7,
-    "33": 7,
-    "8": 8,
-    "28": 8,
-    "29": 8,
-    "6": 9,
-    "24": 9,
-    "25": 9,
-    "5": 10,
-    "22": 10,
-    "23": 10,
-    "1": 11,
-    "14": 11,
-    "15": 11,
-    "2": 12,
-    "16": 12,
-    "17": 12,
-  },
-  d20: {
-    "11": 1,
-    "2": 2,
-    "1": 3,
-    "9": 4,
-    "16": 5,
-    "13": 6,
-    "7": 7,
-    "8": 8,
-    "10": 9,
-    "14": 10,
-    "17": 11,
-    "0": 12,
-    "12": 13,
-    "5": 14,
-    "3": 15,
-    "19": 16,
-    "18": 17,
-    "15": 18,
-    "4": 19,
-    "6": 20,
-  },
-  d100: {
-    "9": 10,
-    "19": 10,
-    "5": 20,
-    "15": 20,
-    "0": 30,
-    "10": 30,
-    "6": 40,
-    "16": 40,
-    "7": 50,
-    "17": 50,
-    "2": 60,
-    "12": 60,
-    "3": 70,
-    "13": 70,
-    "1": 80,
-    "11": 80,
-    "4": 90,
-    "14": 90,
-    "8": 0,
-    "18": 0,
-  },
-}
+const DEBUG = false
 
 const createDebugObjects = (scene: BABYLON.Scene) => {
   const axes = new BABYLON.AxesViewer(scene, 1)
@@ -473,6 +336,8 @@ const loadColorDice = async (scene: BABYLON.Scene) => {
 
   for (const mesh of nodeGroups.colliders) {
     mesh.material = material
+    mesh.registerInstancedBuffer("customColor", 3)
+    mesh.instancedBuffers["customColor"] = BABYLON.Color3.Random()
   }
 }
 
@@ -781,10 +646,19 @@ const DiceFaceInfoView = ({ info }: { info?: DiceFaceInfo }) => {
     return null
   }
   return (
-    <div style={{ display: "flex", flexDirection: "column" }}>
-      <div>{info.diceName}</div>
-      <div>FaceId {info.faceId}</div>
-      {info.value ? <div>Number {info.value}</div> : null}
+    <div
+      style={{
+        display: "flex",
+        width: "100%",
+        justifyContent: "center",
+        alignItems: "center",
+      }}
+    >
+      <div style={{ display: "flex", flexDirection: "column" }}>
+        <div>{info.diceName}</div>
+        <div>FaceId {info.faceId}</div>
+        {/*info.value ? <div>Number {info.value}</div> : null*/}
+      </div>
     </div>
   )
 }
@@ -829,6 +703,7 @@ export const BabylonApp = () => {
       }
 
       const diceName = mesh.name.replace("_collider", "")
+      const colliderFaceMap: any = {}
       const diceFaceIdValues = colliderFaceMap[diceName]
       if (diceFaceIdValues === undefined) {
         setDiceFaceInfo({ diceName, faceId })
@@ -882,7 +757,7 @@ export const BabylonApp = () => {
   const canvasWidth = 768
   const canvasHeight = 768
   return (
-    <div>
+    <div style={{ height: "100vh", width: "100vw" }}>
       <div style={{ display: "flex", gap: "8px" }}>
         <div style={{ width: "40px" }} ref={fpsElementRef}></div>
       </div>
@@ -892,8 +767,16 @@ export const BabylonApp = () => {
           setDiceTheme(value)
         }}
       />
+      <DiceFaceInfoView info={diceFaceInfo} />
       <div style={{ height: "4px" }} />
-      <div style={{ display: "flex", gap: "8px" }}>
+      <div
+        style={{
+          display: "flex",
+          gap: "8px",
+          minHeight: "0",
+          maxHeight: "100%",
+        }}
+      >
         <div>
           <canvas
             ref={setCanvas}
@@ -906,7 +789,6 @@ export const BabylonApp = () => {
               height: `${canvasHeight}px`,
             }}
           />
-          <DiceFaceInfoView info={diceFaceInfo} />
         </div>
         <MeshTables groups={nodeGroups} camera={camera} />
       </div>

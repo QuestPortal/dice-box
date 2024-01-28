@@ -69,9 +69,9 @@ class Dice {
     // Need to keep the correct sign of the scale because
     // the export might have negative scale values.
     dieInstance.scaling = new Vector3(
-      Math.sign(dieInstance.scaling.x) * this.config.scale,
-      Math.sign(dieInstance.scaling.y) * this.config.scale,
-      Math.sign(dieInstance.scaling.z) * this.config.scale
+      dieInstance.scaling.x * this.config.scale,
+      dieInstance.scaling.y * this.config.scale,
+      dieInstance.scaling.z * this.config.scale
     )
 
     if (this.config.enableShadows) {
@@ -186,7 +186,11 @@ class Dice {
 
       // shrink the colliders
       if (mesh.name.includes("collider")) {
-        mesh.scaling = new Vector3(0.9, 0.9, 0.9)
+        mesh.scaling = new Vector3(
+          mesh.scaling.x * 0.9,
+          mesh.scaling.y * 0.9,
+          mesh.scaling.z * 0.9
+        )
 
         // minimal data needed for ammo
         const positions = mesh.getVerticesData("position")
