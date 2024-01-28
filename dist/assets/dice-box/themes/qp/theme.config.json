@@ -1,0 +1,22 @@
+{
+  "name": "Quest Portal Colors",
+  "type": "color",
+  "materials": {
+    "light": {
+      "diffuseTexture": "diffuse.png",
+      "diffuseLevel": 1,
+      "bumpTexture": "normal.png",
+      "bumpLevel": 0.5,
+      "specularTexture": "specular.png",
+      "specularPower": 1
+    },
+    "dark": {
+      "diffuseTexture": "diffuse.png",
+      "diffuseLevel": 1,
+      "bumpTexture": "normal.png",
+      "bumpLevel": 0.5,
+      "specularTexture": "specular.png",
+      "specularPower": 1
+    }
+  }
+}
