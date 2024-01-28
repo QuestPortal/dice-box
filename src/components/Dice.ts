@@ -123,9 +123,10 @@ class Dice {
     return options
   }
 
-  static async loadModelMetadata(options: any) {
-    const metadataPath =
-      "http://localhost:5173/assets/dice-box/models/default/metadata.json"
+  static async loadModelMetadata(meshFilePath: string) {
+    const parts = meshFilePath.split("/")
+    const dir = parts.slice(0, parts.length - 1).join("/")
+    const metadataPath = `${dir}/metadata.json`
     const metadata = await fetch(metadataPath).then((resp) => {
       if (resp.ok) {
         const contentType = resp.headers.get("content-type")
@@ -153,7 +154,7 @@ class Dice {
     // can we get scene without passing it in?
     const { meshFilePath, meshName } = options
 
-    const modelData: any = await this.loadModelMetadata(options)
+    const modelData: any = await this.loadModelMetadata(meshFilePath)
     const data = await SceneLoader.ImportMeshAsync(
       null,
       meshFilePath,
