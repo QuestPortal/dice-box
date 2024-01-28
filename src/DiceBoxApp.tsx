@@ -1,4 +1,5 @@
-import { useEffect, useState } from "react"
+import { useEffect, useState, useRef } from "react"
+import { Inspector } from "@babylonjs/inspector"
 
 import DiceBox from "./WorldFacade"
 
@@ -12,7 +13,7 @@ const config = {
   angularDamping: 0.2,
   linearDamping: 0.5,
   delay: 2,
-  scale: 4,
+  scale: 6,
   gravity: 3,
   mass: 1,
   friction: 0.5,
@@ -27,6 +28,7 @@ const config = {
 }
 
 export const DiceBoxApp = () => {
+  const rootElementRef = useRef<HTMLDivElement | null>(null)
   const [canvasElement, setCanvasElement] = useState<HTMLCanvasElement | null>(
     null
   )
@@ -43,6 +45,7 @@ export const DiceBoxApp = () => {
     try {
       setStatus("creating")
       const dicebox = new DiceBox(`#${canvasId}`, config)
+
       setDicebox(dicebox)
       setStatus("initializing")
       dicebox
@@ -50,6 +53,12 @@ export const DiceBoxApp = () => {
         .then(() => {
           setStatus("initialized")
           setReady(true)
+          const scene = dicebox.getScene()
+          if (rootElementRef.current === null) {
+            console.error("rootElementRef.current is null")
+            return
+          }
+          Inspector.Show(scene, { globalRoot: rootElementRef.current })
         })
         .catch((error) => {
           console.error(error)
@@ -64,45 +73,55 @@ export const DiceBoxApp = () => {
 
   return (
     <div
+      ref={rootElementRef}
       style={{
-        display: "flex",
         width: "100vw",
         height: "100vh",
-        flexDirection: "column",
+        marginRight: "10px",
       }}
     >
-      <div>status:{status}</div>
-      <input
-        style={{ width: "250px" }}
-        value={rollString}
-        onChange={(e) => setRollString(e.target.value)}
-      />
-      <button
-        disabled={!ready}
+      <div
         style={{
-          width: "fit-content",
-        }}
-        onClick={() => {
-          if (dicebox === undefined) {
-            return
-          }
-          dicebox.roll(rollString.split(",")).then((result) => {
-            setResult(result.map((r) => r.value).join(","))
-          })
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "left",
+          paddingLeft: "10px",
         }}
       >
-        Roll
-      </button>
-      <div>result:{result}</div>
+        <div>status:{status}</div>
+        <input
+          style={{ width: "250px" }}
+          value={rollString}
+          onChange={(e) => setRollString(e.target.value)}
+        />
+        <button
+          disabled={!ready}
+          style={{
+            width: "fit-content",
+          }}
+          onClick={() => {
+            if (dicebox === undefined) {
+              return
+            }
+            dicebox.roll(rollString.split(",")).then((result) => {
+              setResult(result.map((r) => r.value).join(","))
+            })
+          }}
+        >
+          Roll
+        </button>
+        <div>result:{result}</div>
+      </div>
       <canvas
         ref={setCanvasElement}
         id={canvasId}
-        width="1000"
-        height="1000"
+        width="768"
+        height="768"
         style={{
           border: "1px solid black",
-          width: "1000px",
-          height: "1000px",
+          marginLeft: "10px",
+          width: "768px",
+          height: "768px",
         }}
       />
     </div>

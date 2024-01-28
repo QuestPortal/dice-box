@@ -71,6 +71,14 @@ class WorldFacade {
     this.loadThemeQueue = createAsyncQueue({ dedupe: true })
   }
 
+  getScene() {
+    return this.#DiceWorld.getScene()
+  }
+
+  render() {
+    return this.#DiceWorld.render()
+  }
+
   // Load the BabylonJS World
   async #loadWorld() {
     // set up a promise to be fulfilled when a message comes back from DiceWorld indicating init is complete

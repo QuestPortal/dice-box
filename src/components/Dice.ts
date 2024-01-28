@@ -4,7 +4,6 @@ import { Color3 } from "@babylonjs/core/Maths/math.color"
 import * as BABYLON from "@babylonjs/core"
 import { Ray } from "@babylonjs/core/Culling/ray"
 // import { RayHelper } from '@babylonjs/core/Debug';
-import "../helpers/babylonFileLoader"
 import "@babylonjs/core/Meshes/instancedMesh"
 
 import { deepCopy } from "../helpers"
@@ -66,10 +65,13 @@ class Dice {
 
     // start the instance under the floor, out of camera view
     dieInstance.position.y = -100
+
+    // Need to keep the correct sign of the scale because
+    // the export might have negative scale values.
     dieInstance.scaling = new Vector3(
-      this.config.scale,
-      this.config.scale,
-      this.config.scale
+      Math.sign(dieInstance.scaling.x) * this.config.scale,
+      Math.sign(dieInstance.scaling.y) * this.config.scale,
+      Math.sign(dieInstance.scaling.z) * this.config.scale
     )
 
     if (this.config.enableShadows) {
@@ -164,20 +166,21 @@ class Dice {
     let root = undefined
     const colliders = []
     for (const mesh of data.meshes) {
-      console.log("mesh", mesh.name)
       if (!(mesh instanceof BABYLON.Mesh)) {
         throw new Error("mesh not a Mesh: " + meshName)
       }
       if (mesh.name === "__root__") {
+        mesh.setEnabled(false)
         root = mesh
         continue
       }
       if (mesh.parent?.name === "__root__") {
         // detach all meshes from the root node
-        mesh.parent = null
+        mesh.setParent(null)
       }
       if (mesh.name.startsWith("d")) {
-        // TODO: remove from the glib file
+        // the dice meshes do not have any materials but the gltf export in blender
+        // attaches some default materials to the meshes, so we need to remove them
         mesh.material = null
       }
 

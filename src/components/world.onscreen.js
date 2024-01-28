@@ -35,6 +35,10 @@ class WorldOnscreen {
     this.initialized = this.initScene(options)
   }
 
+  getScene() {
+    return this.#scene
+  }
+
   // initialize the babylon scene
   async initScene(config) {
     this.#canvas = config.canvas
@@ -47,7 +51,11 @@ class WorldOnscreen {
     // setup babylonJS scene
     this.#engine = createEngine(this.#canvas)
     this.#scene = createScene({ engine: this.#engine })
-    this.#camera = createCamera({ engine: this.#engine, scene: this.#scene })
+    this.#camera = createCamera({
+      engine: this.#engine,
+      scene: this.#scene,
+      canvas: this.#canvas,
+    })
     this.#lights = createLights({
       enableShadows: this.config.enableShadows,
       shadowTransparency: this.config.shadowTransparency,
